@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 import translations from '../client/i18n/locales/english/translations.json';
 
-test.use({ storageState: 'playwright/.auth/certified-user.json' });
-
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
 });
@@ -14,7 +12,10 @@ test.describe('Signout Modal component', () => {
       .getByRole('button', { name: translations.buttons['sign-out'] })
       .click();
 
-    await expect(page.getByText(translations.signout.heading)).toBeVisible();
+    await expect(
+      page.getByRole('dialog', { name: translations.signout.heading })
+    ).toBeVisible();
+
     await expect(page.getByText(translations.signout.p1)).toBeVisible();
     await expect(page.getByText(translations.signout.p2)).toBeVisible();
 
@@ -37,10 +38,17 @@ test.describe('Signout Modal component', () => {
       .getByRole('button', { name: translations.buttons['sign-out'] })
       .click();
 
+    await expect(
+      page.getByRole('dialog', { name: translations.signout.heading })
+    ).toBeVisible();
+
     await page
       .getByRole('button', { name: translations.signout.certain })
       .click();
 
+    await expect(
+      page.getByRole('dialog', { name: translations.signout.heading })
+    ).not.toBeVisible();
     await expect(page).toHaveURL(/.*\/learn\/?$/);
   });
 
@@ -50,13 +58,18 @@ test.describe('Signout Modal component', () => {
       .getByRole('button', { name: translations.buttons['sign-out'] })
       .click();
 
+    await expect(
+      page.getByRole('dialog', { name: translations.signout.heading })
+    ).toBeVisible();
+
     await page
       .getByRole('button', { name: translations.signout.nevermind })
       .click();
 
-    await expect(page).toHaveURL('/');
     await expect(
-      page.getByText(translations.signout.heading)
+      page.getByRole('dialog', { name: translations.signout.heading })
     ).not.toBeVisible();
+
+    await expect(page).toHaveURL('/');
   });
 });
